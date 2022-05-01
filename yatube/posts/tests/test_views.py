@@ -179,7 +179,7 @@ class CommentTest(TestCase):
         cls.post = Post.objects.create(
             author=cls.author_user,
             text='Тестовый текст',
-            )
+        )
 
     def setUp(self):
         self.author_user_client = Client()
