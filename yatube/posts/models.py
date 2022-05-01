@@ -72,7 +72,7 @@ class Comment(models.Model):
         related_name='comments'
     )
     text = models.TextField('Текст', help_text='Текст нового комментария')
-    created = models.DateTimeField(null=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self) -> str:
         return self.text[:200]
