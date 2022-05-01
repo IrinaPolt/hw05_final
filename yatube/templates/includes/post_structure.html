@@ -1,0 +1,34 @@
+<article>
+    {% for post in page_obj %}
+      <ul>
+        <li>
+          Автор: 
+          {% if post.author != None %}
+            <a href="{% url 'posts:profile' post.author %}"> {{ post.author.get_full_name }} </a>
+          {% endif %}
+        </li>
+        <li>
+          Дата публикации: {{post.pub_date|date:"j F Y"}}
+        </li>
+        <li>
+          Группа: 
+          {% if post.group.title != None %}
+          <a href="{% url 'posts:group_posts' post.group.slug %}"> {{ post.group.title }} </a>
+          {% else %}
+            группа не установлена
+          {% endif %}
+        </li>
+      </ul>
+      <p> {{ post.text }} </p>
+      <a href="{% url 'posts:post_detail' post.id %}"> подробная информация </a>
+      <br>
+      {% if post.group.title != None %}
+        <a href="{% url 'posts:group_posts' post.group.slug %}"> все записи группы </a>
+      {% else %}
+        <p>
+          группа не установлена
+        </p>
+      {% endif %}
+      {% if not forloop.last %}<hr>{% endif %}
+    {% endfor %}
+  </article>

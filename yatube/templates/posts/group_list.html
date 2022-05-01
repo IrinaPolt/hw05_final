@@ -1,0 +1,29 @@
+<!DOCTYPE html> <!-- Используется html 5 версии -->
+<html lang="ru"> <!-- Язык сайта - русский -->
+{%extends 'base.html'%}
+{% block header %}{{ group.title }}{% endblock %}
+{%block content%}
+  <div class="container py-5">
+    <h1>{{ group.title }}</h1>
+    <p>{{ group.description }}</p>
+    <article>
+      {% for post in posts %}
+        <ul>
+          <li>
+            {% if post.author != None %}
+              <a href="{% url 'posts:profile' post.author %}"> {{ post.author.get_full_name }} </a>
+            {% else %}
+              <p> admin </p>
+            {% endif %}
+          </li>
+          <li>
+            Дата публикации: {{ post.pub_date|date:"j F Y"}}
+          </li>
+        </ul>
+        <p> {{ post.text }} </p>
+        {% if not forloop.last %}<hr>{% endif %}
+      {% endfor %}
+      {% include 'includes/paginator.html' %}
+    </article>
+  </div>
+{% endblock %}

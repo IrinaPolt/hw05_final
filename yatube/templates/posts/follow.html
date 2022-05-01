@@ -1,0 +1,16 @@
+{%extends 'base.html'%}
+{% load thumbnail %}
+{%block title%} Подписка {%endblock%}
+{%block content%}
+  <head>
+    <h1> Подписка </h1>
+  </head>
+  <body>
+    <main>
+      <div class="container py-5">     
+        <article>
+          {% include 'includes/post_structure.html' %}
+        </article>
+        {% include 'includes/paginator.html' %}
+      </div>  
+{%endblock%}
