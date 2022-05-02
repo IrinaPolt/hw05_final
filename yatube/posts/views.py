@@ -11,19 +11,20 @@ PAGE_NMB = 10
 
 @cache_page(20, key_prefix='index_page')
 def index(request):
-    post_list = Post.objects.all().order_by('-pub_date')
+    post_list = Post.objects.all().select_related(
+        'group').order_by('-pub_date')
     paginator = Paginator(post_list, PAGE_NMB)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    index = True
+    follow = True
     context = {
         'post_list': post_list,
         'page_obj': page_obj,
+        'index': index,
+        'follow': follow,
     }
     return render(request, 'posts/index.html', context)
-
-
-def group_list(request):
-    return render(request, 'posts/group_list.html')
 
 
 def group_posts(request, slug):
@@ -138,9 +139,13 @@ def follow_index(request):
     paginator = Paginator(posts, PAGE_NMB)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    index = True
+    follow = True
     context = {
         'page_obj': page_obj,
         'paginator': paginator,
+        'index': index,
+        'follow': follow,
     }
     return render(request, 'posts/follow.html', context)
 

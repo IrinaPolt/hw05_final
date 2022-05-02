@@ -260,7 +260,7 @@ class ImageViewsTest(TestCase):
             self.assertEqual(image_file, 'posts/small.gif')
 
 
-class CashTests(TestCase):
+class CasheTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -279,7 +279,7 @@ class CashTests(TestCase):
         """Проверка кэшинга index."""
         response = self.authorized_client.get(reverse('posts:index'))
         new_content = response.content
-        Post.objects.filter(id=self.post.pk).delete()
+        self.post.delete()
         response = self.authorized_client.get(reverse('posts:index'))
         content_after_delete = response.content
         self.assertEqual(new_content, content_after_delete)
@@ -310,20 +310,22 @@ class FollowerTest(TestCase):
         self.follow_client.force_login(self.follow_user)
 
     def test_follow_user_to_author(self):
-        """Проверка подписки и отписки на авторов."""
+        """Проверка подписки на авторов."""
         self.follow_client.get(
             reverse('posts:profile_follow', kwargs={
                 'username': self.author_user.username}))
         follow = Follow.objects.filter(
             user=self.follow_user, author=self.author_user).exists()
         self.assertTrue(follow)
+
+    def test_unfollow_user_to_autor(self):
         self.follow_client.get(
             reverse('posts:profile_unfollow', kwargs={
                 'username': self.author_user.username}))
         follow = Follow.objects.filter(
             user=self.follow_user, author=self.author_user).exists()
-        self.assertEqual(follow, False)
-
+        self.assertFalse(follow)
+        
     def test_subscription_feed(self):
         """Запись появляется в ленте подписчиков."""
         Follow.objects.create(

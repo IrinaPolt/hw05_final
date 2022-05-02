@@ -1,3 +1,5 @@
+import os
+
 import shutil
 import tempfile
 
@@ -7,7 +9,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
-from posts.models import Post, Group
+from posts.models import Post, Group, Comment
 
 User = get_user_model()
 
@@ -20,6 +22,7 @@ class PostCreateFormTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_user(username='Тестовый юзер')
+        cls.commentator = User.objects.create_user(username='Тестовый комментатор')
         cls.group = Group.objects.create(
             title='Тестовая группа',
             slug='test-slug',
@@ -40,6 +43,11 @@ class PostCreateFormTests(TestCase):
             author=cls.user,
             group=cls.group2,
         )
+        cls.comment = Comment.objects.create(
+            post = cls.post,
+            author = cls.commentator,
+            text = 'Текст тестового комментария',
+        )
 
     @classmethod
     def tearDownClass(cls):
@@ -49,6 +57,8 @@ class PostCreateFormTests(TestCase):
     def setUp(self):
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
+        self.authorized_commentator = Client()
+        self.authorized_commentator.force_login(self.commentator)
 
     def test_post_saved(self):
         small_gif = (
@@ -75,13 +85,14 @@ class PostCreateFormTests(TestCase):
             follow=True
         )
         last_post = Post.objects.latest('id')
+        last_post_image_name = os.path.basename(last_post.image.name)
         self.assertRedirects(
             response, reverse('posts:profile',
                               kwargs={'username': self.user.username}))
         self.assertEqual(last_post.author.id, self.post.author.id)
         self.assertEqual(last_post.group.pk, form_data['group'])
         self.assertEqual(last_post.text, form_data['text'])
-        self.assertIsNotNone(last_post.image)
+        self.assertEqual(last_post_image_name, form_data['image'].name)
 
     def test_post_edited(self):
         form_data = {
@@ -100,3 +111,15 @@ class PostCreateFormTests(TestCase):
         self.assertEqual(edited_post, self.edit_post)
         self.assertEqual(edited_post.group.pk, form_data['group'])
         self.assertEqual(edited_post.text, form_data['text'])
+
+    def test_add_comment(self):
+        form_data = {
+            'text': self.comment.text,
+        }
+        response = self.authorized_commentator.post(
+            reverse('posts:post_detail', kwargs={'post_id': self.post.pk}),
+            data = form_data,
+            follow=True
+        )
+        created_comment = Comment.objects.get(post_id=self.post.pk)
+        self.assertEqual(created_comment.text, form_data['text'])
