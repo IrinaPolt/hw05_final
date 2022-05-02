@@ -325,7 +325,7 @@ class FollowerTest(TestCase):
         follow = Follow.objects.filter(
             user=self.follow_user, author=self.author_user).exists()
         self.assertFalse(follow)
-        
+
     def test_subscription_feed(self):
         """Запись появляется в ленте подписчиков."""
         Follow.objects.create(

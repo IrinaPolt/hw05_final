@@ -22,7 +22,8 @@ class PostCreateFormTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_user(username='Тестовый юзер')
-        cls.commentator = User.objects.create_user(username='Тестовый комментатор')
+        cls.commentator = User.objects.create_user(
+            username='Тестовый комментатор')
         cls.group = Group.objects.create(
             title='Тестовая группа',
             slug='test-slug',
@@ -44,9 +45,9 @@ class PostCreateFormTests(TestCase):
             group=cls.group2,
         )
         cls.comment = Comment.objects.create(
-            post = cls.post,
-            author = cls.commentator,
-            text = 'Текст тестового комментария',
+            post=cls.post,
+            author=cls.commentator,
+            text='Текст тестового комментария',
         )
 
     @classmethod
@@ -116,9 +117,9 @@ class PostCreateFormTests(TestCase):
         form_data = {
             'text': self.comment.text,
         }
-        response = self.authorized_commentator.post(
+        self.authorized_commentator.post(
             reverse('posts:post_detail', kwargs={'post_id': self.post.pk}),
-            data = form_data,
+            data=form_data,
             follow=True
         )
         created_comment = Comment.objects.get(post_id=self.post.pk)
