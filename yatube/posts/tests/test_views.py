@@ -260,7 +260,7 @@ class ImageViewsTest(TestCase):
             self.assertEqual(image_file, 'posts/small.gif')
 
 
-class CasheTests(TestCase):
+class CacheTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

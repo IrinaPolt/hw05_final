@@ -122,5 +122,6 @@ class PostCreateFormTests(TestCase):
             data=form_data,
             follow=True
         )
-        created_comment = Comment.objects.get(post_id=self.post.pk)
+        created_comment = Comment.objects.filter(
+            post_id=self.post.pk).last()
         self.assertEqual(created_comment.text, form_data['text'])
